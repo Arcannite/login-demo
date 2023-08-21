@@ -11,7 +11,6 @@ export const authOptions = {
     strategy: 'jwt'
   },
   providers: [
-    // ...add more providers here
     Credentials({
       name: 'Sign in',
       credentials: {
@@ -49,11 +48,21 @@ export const authOptions = {
         return {
           id: String(user.id),
           email: user.email,
-          username: user.username
+          name: user.username
         }
       }
     })
   ],
+  // callbacks: {
+  //   session: ({ session, token }) => {
+  //     console.log('session callback', { session, token } )
+  //     return session 
+  //   },
+  //   jwt: ({ token, user }) => {
+  //     console.log('jwt callback', { token, user })
+  //     return token
+  //   }
+  // }
 }
 
 const handler = NextAuth(authOptions)
