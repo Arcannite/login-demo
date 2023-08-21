@@ -3,6 +3,12 @@ const { hash } = require('bcrypt')
 
 const prisma = new PrismaClient();
 
+// package.json
+
+// "prisma": {
+//   "seed": "node prisma/seed.js"
+// },
+
 async function main() {
   const password = await hash('superduperpowerfulamazingpassword111', 12)
 
