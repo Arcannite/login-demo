@@ -1,7 +1,7 @@
 'use client'
 
 import { signIn, signOut, useSession } from 'next-auth/react'
-import { getUser } from './helpers'
+import { autoFetch, getUser } from './helpers'
 import { useRouter } from 'next/navigation'
 
 export function LoginButton() {
@@ -49,7 +49,7 @@ export function SaveButton({ post }) {
         className="float-right rounded-lg border border-sky-500 bg-sky-300 hover:bg-sky-200 p-4"
         onClick={async () => {
           if (confirm("Confirm to save changes?")) {
-            const request = await fetch('http://localhost:3000/api/editPost', {
+            const request = await autoFetch('/api/editPost', {
               method: 'PUT',
               headers: {
                 "Content-Type": "text/plain;charset=UTF-8",
@@ -80,7 +80,7 @@ export function CreateButton({ post }) {
         onClick={async () => {
           const user = await getUser(undefined, undefined, session['user']['name']) // I couldn't find a better way to do it at the moment
           
-          const request = await fetch('http://localhost:3000/api/createPost', {
+          const request = await autoFetch('/api/createPost', {
             method: 'POST',
             headers: {
               "Content-Type": "text/plain;charset=UTF-8",
@@ -115,7 +115,7 @@ export function DeleteButton({ post }) {
         className="float-right rounded-lg border border-red-400 bg-red-200 hover:bg-red-100 p-4"
         onClick={async () => {
           if (confirm("Confirm to delete this post? This action is NOT REVERSIBLE and the data will PERMANENTLY be lost.")) {
-            const request = await fetch('http://localhost:3000/api/deletePost', {
+            const request = await autoFetch('/api/deletePost', {
               method: 'DELETE',
               headers: {
                 "Content-Type": "text/plain;charset=UTF-8",

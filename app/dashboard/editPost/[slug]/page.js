@@ -1,4 +1,5 @@
 import Editor from '../../../components/editor'
+import { autoFetch } from '@/app/utils/helpers';
 
 export default async function Home({ params }) {
   var res, post;
@@ -9,14 +10,7 @@ export default async function Home({ params }) {
     },
     body: JSON.stringify({ "id": parseInt(params.slug) })
   }
-
-  if (process.env.NODE_ENV === 'production') {
-    res = await fetch('http://login-demo-arcannite.vercel.app/api/getSinglePost', options)
-  }
-  else {
-    res = await fetch('http://localhost:3000/api/getSinglePost', options)
-  }
-  
+  res = await autoFetch('/api/getSinglePost', options)
   if (res.status == 200 || res.status == 201) {
     post = await res.json()
     return (
