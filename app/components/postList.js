@@ -28,7 +28,7 @@ function Navbar() {
 export default function PostList({ posts }) {
   const [ deleteModeActive, toggleDeleteModeActive ] = useState(false)
   
-  if (posts.length === 0) {
+  if (Object.prototype.toString.call(posts) !== '[object Array]' || posts.length === 0) {
     return (
       <main className="flex min-h-screen flex-col space-y-12 px-24 py-20">
         <Navbar/>
