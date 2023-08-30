@@ -22,6 +22,7 @@ model post {
   lastEditDate DateTime? @default(now())
   title        String?   @db.VarChar(255)
   content      String?   @db.Text
+  photoUrl     String?   @db.VarChar(255)
   authorId     Int
   author       user      @relation(fields: [authorId], references: [id])
 

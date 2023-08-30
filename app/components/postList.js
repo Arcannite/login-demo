@@ -3,7 +3,7 @@
 import { useState } from "react"
 
 import { LogoutButton, RefButton } from '../utils/buttons'
-import { parseDateTime, autoFetch } from '../utils/helpers'
+import { parseDateTime, autoFetch, getUser } from '../utils/helpers'
 import { redirect } from "next/navigation"
 
 function Navbar() {
@@ -76,9 +76,9 @@ export default function PostList({ posts }) {
 
         </div>
         {
-          posts.map( (post) => (
+          posts.map( async (post) => (
             <div className='grid grid-cols-12 border-r border-gray-500' key={post.id}>
-              <div className='p-4 border-l border-t border-gray-500 col-span-1'>{post.authorId}</div>
+              <div className='p-4 border-l border-t border-gray-500 col-span-1'>{await getUser(post.authorId).then(user => user['username'])}</div>
               <div className='p-4 border-l border-t border-gray-500 col-span-2'>{parseDateTime(post.postDate)}</div>
               <div className='p-4 border-l border-t border-gray-500 col-span-2'>
                 {post.lastEditDate ? parseDateTime(post.lastEditDate) : parseDateTime(post.postDate)}

@@ -4,6 +4,28 @@ import { signIn, signOut, useSession } from 'next-auth/react'
 import { autoFetch, getUser } from './helpers'
 import { useRouter } from 'next/navigation'
 
+async function temp() {
+  try {
+    const req = await fetch(
+      "https://" + process.env.NEXT_PUBLIC_S3_BUCKET
+      + ".execute-api." + process.env.NEXT_PUBLIC_BUCKET_REGION
+      + ".amazonaws.com/v1/" + process.env.NEXT_PUBLIC_BUCKET_NAME + '/' + e.target.files[0].name, 
+      {
+        body: e.target.files[0],
+        headers: {
+          "Content-Type": "image/jpeg;charset=ISO-8859-1" 
+        },
+        method: "PUT",
+      }
+    )
+    const result = await req.text()
+    console.log(result)
+  }
+  catch (e) {
+    console.log("Error ", e)
+  }
+}
+
 export function LoginButton() {
   return (
     <p className="
@@ -42,7 +64,7 @@ export function LogoutButton() {
   )
 }
 
-export function SaveButton({ post }) {
+export function SaveButton({ post, photo }) {
   return (
     <div>
       <button 
@@ -70,14 +92,56 @@ export function SaveButton({ post }) {
   )
 }
 
-export function CreateButton({ post }) {
+export function CreateButton({ post, photo }) {
   const { data: session } = useSession()
   const router = useRouter()
   return (
     <div>
       <button 
         className="float-right rounded-lg border border-amber-400 bg-amber-200 hover:bg-amber-100 p-4"
-        onClick={async () => {
+        onClick={async () => { 
+
+          // title CANNOT be empty
+          if (typeof post.title === 'string' && post.title.length === 0) {
+            alert("Title cannot be empty")
+            return
+          }
+
+          // content CANNOT be empty
+          if (typeof post.content === 'string' && post.content.length === 0) {
+            alert("Content cannot be empty")
+            return
+          }
+
+          // part 1, if there is any photo, try to upload the photo onto S3 bucket
+
+          let filename = '';
+
+          if (photo['file'] !== undefined) {
+
+            filename = photo['file'].name
+
+            const req = await fetch(
+              "https://" + process.env.NEXT_PUBLIC_S3_BUCKET
+              + ".execute-api." + process.env.NEXT_PUBLIC_BUCKET_REGION
+              + ".amazonaws.com/v1/" + process.env.NEXT_PUBLIC_BUCKET_NAME + '/' + filename, 
+              {
+                body: photo['file'],
+                headers: {
+                  "Content-Type": "image/jpeg;charset=ISO-8859-1" 
+                },
+                method: "PUT",
+              }
+            )
+
+            if (req.status < 200 || req.status >= 300 ) {
+              alert("Photo upload failed. Please try again later.")
+              return
+            }
+          }
+
+          // part 2, upload the post along with the URL of the image (if any) on the db
+          
           const user = await getUser(undefined, undefined, session['user']['name']) // I couldn't find a better way to do it at the moment
           
           const request = await autoFetch('/api/createPost', {
@@ -88,7 +152,8 @@ export function CreateButton({ post }) {
             body: JSON.stringify({
               "title": post.title,
               "content": post.content,
-              "authorId": user.id
+              "authorId": user.id,
+              "photoUrl": filename
             })
           })
           // console.log(request)

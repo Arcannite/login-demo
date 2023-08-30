@@ -4,6 +4,7 @@ import { SessionProvider } from "next-auth/react"
 import { SaveButton, CreateButton, RefButton, DeleteButton } from "../utils/buttons"
 
 export default function Editor({ post, mode }) {
+  const photo = {}; // this variable needs to be passed by reference
 
   return (
     <SessionProvider>
@@ -14,7 +15,7 @@ export default function Editor({ post, mode }) {
         </div>
 
         <div className="grid grid-cols-8">
-          <label className="col-span-1" htmlFor="name"> Title </label>
+          <label className="col-span-1" htmlFor="title"> Title </label>
           <input
             className="border border-gray-400 h-10 text-xl col-span-7"
             type="text"
@@ -35,7 +36,12 @@ export default function Editor({ post, mode }) {
           />
         </div>
 
-        {mode === 'edit' ? <SaveButton post={post}/> : <CreateButton post={post}/>}
+        <div>
+          <label className="block" htmlFor="photo"> Upload a photo for the post </label>
+          <input className='block' type='file' name="photo" onChange={ e => photo["file"] = e.target.files[0] }/>
+        </div>
+
+        {mode === 'edit' ? <SaveButton post={post} photo={photo}/> : <CreateButton post={post} photo={photo}/>}
 
       </div>
     </SessionProvider>
